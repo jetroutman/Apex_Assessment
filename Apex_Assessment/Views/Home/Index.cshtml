@@ -1,0 +1,59 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+    var date = @DateTime.Today.AddMonths(-1);
+    var first = new DateTime(date.Year, date.Month, 1);
+    var last = first.AddMonths(1).AddDays(-1);
+}
+
+<div class="form-12 card-form">
+    <label>Start Date</label>
+    <div class="modal-date"><input type="text" id="Begin-Date" value="@first.ToShortDateString()"></div>
+    <label>End Date</label>
+    <div class="modal-date"><input type="text" id="End-Date" value="@last.ToShortDateString()"></div>
+    <button class="btn btn-shade-1" onclick="getInfo()">Get Info</button>
+    <table>
+    </table>
+</div>
+
+<script>
+    $(function () {//Adds Date Picker to all needed inputs
+        $('#Begin-Date', '#End-Date').datepicker({
+            inline: true,
+            showOtherMonths: true,
+            dayNamesMin: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        });
+    });
+
+    var infoData = function () {
+        return {
+            lastName: ''
+        };
+    }
+
+    function getInfo() {
+        var info;
+        var bdate = new Date($("#Begin-Date").val());
+        var edate = new Date($("#End-Date").val())
+        //console.log(bdate, edate);
+        $.ajax({
+            url: '/Home/GetTableInfo',
+            type: 'get',
+            data: {
+                bdate: bdate,
+                edate: edate
+            },
+            success: function (result) {
+                $.each(result, function () {
+                    var i = infoData();
+                    i.lastName = this.LName;
+                });
+            }
+        })
+        //$.getJSON('/Home/GetTableInfo?bdate='+bdate+'edate=' + edate, function (result) {
+        //    $.each(result, function () {
+        //        var i = infoData();
+        //        i.lastName = this.LName;
+        //    });
+        //});
+    }
+</script>
